@@ -1,1 +1,148 @@
+#include "rtc_stm_lib.h"
+char* weekDays[7] = {(uint8_t*)"Monday",(uint8_t*)"Tuesday",(uint8_t*)"Wednesday",(uint8_t*)"Thursday",(uint8_t*)"Friday",(uint8_t*)"Saturday",(uint8_t*)"Sunday"};
+extern RTC_TimeTypeDef sTime;
+extern RTC_DateTypeDef sDate;
+extern RTC_HandleTypeDef hrtc;
+void RTC_Init(void){
+	 RTC_TimeTypeDef sTime = {0};
+	 RTC_DateTypeDef sDate = {0};
+
+	  hrtc.Instance = RTC;
+	  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	  hrtc.Init.AsynchPrediv = 127;
+	  hrtc.Init.SynchPrediv = 255;
+	  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+
+
+	  sTime.Hours = 0x0;
+	  sTime.Minutes = 0x0;
+	  sTime.Seconds = 0x0;
+	  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+	  sDate.Month = RTC_MONTH_JANUARY;
+	  sDate.Date = 0x1;
+	  sDate.Year = 0x0;
+
+	  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+}
+void setTime(int hours, int minutes, int seconds){
+	RTC_TimeTypeDef sTime;
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	sTime.Hours = hours;
+	sTime.Minutes = minutes;
+	sTime.Seconds = seconds;
+	HAL_RTC_SetTime(&hrtc, &sTime, FORMAT_BCD);
+}
+void setData(int Year, int Month, int Day, int weekDay){
+	weekDay--;
+	RTC_DateTypeDef sDate;
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	sDate.Year = Year;
+	sDate.Month = Month;
+	sDate.Date = Day;
+	sDate.WeekDay = weekDay;
+	HAL_RTC_SetDate(&hrtc, &sDate, FORMAT_BCD);
+
+}
+void setHMSDMY(int8_t hours, int8_t minutes, int8_t seconds, int8_t date, int8_t month, int16_t year, int8_t weekDay){
+	weekDay--;
+	RTC_DateTypeDef sDate;
+	RTC_TimeTypeDef sTime;
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	sTime.Hours = hours;
+	sTime.Minutes = minutes;
+	sTime.Seconds = seconds;
+	HAL_RTC_SetTime(&hrtc, &sTime, FORMAT_BCD);
+	sDate.Year = year;
+	sDate.Month = month;
+	sDate.Date = date;
+	sDate.WeekDay = weekDay;
+	HAL_RTC_SetDate(&hrtc, &sDate, FORMAT_BCD);
+}
+int getYear(){
+	RTC_DateTypeDef sDate;
+	HAL_RTC_GetDate(&hrtc, &sDate, FORMAT_BCD);
+	uint8_t year = sDate.Year;
+	return year;
+}
+int getMonth(){
+	RTC_DateTypeDef sDate;
+	HAL_RTC_GetDate(&hrtc, &sDate, FORMAT_BCD);
+	uint8_t month = sDate.Month;
+	return month;
+}
+int getDay(){
+	RTC_DateTypeDef sDate;
+	HAL_RTC_GetDate(&hrtc, &sDate, FORMAT_BCD);
+	uint8_t day = sDate.Date;
+	return day;
+
+}
+int getWeekNum(){
+	RTC_DateTypeDef sDate;
+	HAL_RTC_GetDate(&hrtc, &sDate, FORMAT_BCD);
+	uint8_t weekDay = sDate.WeekDay;
+	return weekDay;
+}
+char* getWeekDay(){
+	RTC_DateTypeDef sDate;
+	HAL_RTC_GetDate(&hrtc, &sDate, FORMAT_BCD);
+	uint8_t weekDay = sDate.WeekDay;
+	return weekDays[weekDay];
+}
+
+
+int getHours(){
+	RTC_TimeTypeDef sTime;
+	HAL_RTC_GetTime(&hrtc, &sTime, FORMAT_BCD);
+	uint8_t hours = sTime.Hours;
+	return hours;
+}
+int getMinutes(){
+	RTC_TimeTypeDef sTime;
+	HAL_RTC_GetTime(&hrtc, &sTime, FORMAT_BCD);
+	uint8_t minutes = sTime.Minutes;
+	return minutes;
+
+
+}
+int getSeconds(){
+	RTC_TimeTypeDef sTime;
+	HAL_RTC_GetTime(&hrtc, &sTime, FORMAT_BCD);
+	uint8_t seconds = sTime.Seconds;
+	return seconds;
+
+}
 
