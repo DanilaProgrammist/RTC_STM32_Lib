@@ -17,7 +17,7 @@ Installation Instrauction
 
 Main Functions:
 
-<span style="color: green"> void RTC_Init() - initialization RTC  </span>
+void RTC_Init() - initialization RTC
 
 void setTime(int hours, int minutes, int seconds) - set current time from the specified parameters
 
